@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../components/CustomButton';
 import { increaseCounter, decreseCounter, clearUserList } from '../redux/ReduxToolkit/store/slices/userSlice';
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { createThumbnail } from "react-native-create-thumbnail";
 
 export const Home = () => {
     const [userList, setUserList] = React.useState([]);
@@ -36,7 +37,16 @@ export const Home = () => {
                 }).then((imageLibraryResponse) => {
                     if(imageLibraryResponse.assets)
                     imageLibraryResponse.assets.forEach((item) => {
-                        console.log("2222222222222222", item.uri)
+                        if(item.uri){
+                            Alert.alert("showAlert", item.uri)
+                        createThumbnail({
+                            url: item.uri,
+                            timeStamp: 1000,
+                            format: 'png'
+                          })
+                            .then(response => console.log("3333333333333", { response }))
+                            .catch(err => console.log("3333333333333", { err }));
+                        }
                     })
                 }).catch(err => console.log("22222222222", err))
             }
