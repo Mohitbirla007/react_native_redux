@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../components/CustomButton';
 import { increaseCounter, decreseCounter, clearUserList } from '../redux/ReduxToolkit/store/slices/userSlice';
+import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
 
 export const Home = () => {
     const [userList, setUserList] = React.useState([]);
@@ -21,6 +22,16 @@ export const Home = () => {
         dispatch(clearUserList())
     }
 
+    const selectFile = () => {
+        requestPermission()
+    }
+
+    const requestPermission = () => {
+        requestMultiple([PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.MEDIA_LIBRARY]).then(result => {
+            console.log("123444444", result);
+        })
+    }
+
     return (
         <SafeAreaView style={{paddingHorizontal: 10}}>
             <Text style={[styles.blackText, styles.marginVirticle]}>User name : {selector.userName}</Text>
@@ -29,6 +40,7 @@ export const Home = () => {
             )}
             <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
             <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
+            <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile}/>
         </SafeAreaView>
     )
 }
