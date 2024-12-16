@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../components/CustomButton';
 import { increaseCounter, decreseCounter, clearUserList } from '../redux/ReduxToolkit/store/slices/userSlice';
 import {requestMultiple, PERMISSIONS} from 'react-native-permissions';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 export const Home = () => {
     const [userList, setUserList] = React.useState([]);
@@ -28,7 +29,17 @@ export const Home = () => {
 
     const requestPermission = () => {
         requestMultiple([PERMISSIONS.IOS.PHOTO_LIBRARY, PERMISSIONS.IOS.MEDIA_LIBRARY]).then(result => {
-            console.log("123444444", result);
+            if(result['ios.permission.MEDIA_LIBRARY'] === 'granted' && result['ios.permission.PHOTO_LIBRARY'] === 'granted') {
+                launchImageLibrary({
+                    mediaType: 'mixed',
+                    includeBase64: true,
+                }).then((imageLibraryResponse) => {
+                    if(imageLibraryResponse.assets)
+                    imageLibraryResponse.assets.forEach((item) => {
+                        console.log("2222222222222222", item.uri)
+                    })
+                }).catch(err => console.log("22222222222", err))
+            }
         })
     }
 
