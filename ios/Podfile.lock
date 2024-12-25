@@ -1355,7 +1355,7 @@ PODS:
     - TOCropViewController (~> 2.7.4)
   - RNPermissions (5.2.1):
     - React-Core
-  - RNScreens (3.32.0):
+  - RNScreens (4.4.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1676,7 +1676,7 @@ SPEC CHECKSUMS:
   RNFBMessaging: 85f661b9f16e2b081e6809ef63d3daa4458b9042
   RNImageCropPicker: 8e39c01f205e00d739c31e682f068aac315587bf
   RNPermissions: 258934dd8a842aabea42caf2d6696aae31e1a49c
-  RNScreens: 5aeecbb09aa7285379b6e9f3c8a3c859bb16401c
+  RNScreens: 024c5cb8569dea6667b5c73e6c119beb83f686f0
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: ae3c32c514802d30f687a04a6a35b348506d411f

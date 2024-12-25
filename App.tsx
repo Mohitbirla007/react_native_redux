@@ -32,10 +32,12 @@ import { Login } from './src/screens/Login';
 import { Home } from './src/screens/Home';
 import { Provider } from 'react-redux';
 import store from './src/redux/ReduxToolkit/store';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 // import store from './src/redux/ReduxToolkit/store';
 
 
 const Stack = createNativeStackNavigator();
+const BottomTab = createBottomTabNavigator();
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -65,10 +67,26 @@ function App(): React.JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundStyle.backgroundColor}
         />
-        <Stack.Navigator initialRouteName='Login'>
-          <Stack.Screen name='Login' component={Login} options={{ title: 'Login' }} />
-          <Stack.Screen name='Home' component={Home} options={{ title: 'Home' }} />
-        </Stack.Navigator>
+        <BottomTab.Navigator >
+          <BottomTab.Screen
+            name="Login" 
+            component={Login}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{color: 'black'}}>{"<"}</Text>
+              ),
+            }}
+          />
+          <BottomTab.Screen
+            name="Home" 
+            component={Home}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{color: 'black'}}>{"<"}</Text>
+              ),
+            }}
+          />
+        </BottomTab.Navigator>
       </NavigationContainer>
     </Provider>
   );
