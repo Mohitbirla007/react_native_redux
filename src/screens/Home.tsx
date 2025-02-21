@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Alert, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { SetStateAction, useEffect } from 'react';
+import { Alert, Image, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../components/CustomButton';
 import { increaseCounter, decreseCounter, clearUserList } from '../redux/ReduxToolkit/store/slices/userSlice';
@@ -9,9 +9,14 @@ import { createThumbnail } from "react-native-create-thumbnail";
 import ImagePicker, { Video } from "react-native-image-crop-picker";
 import { generateThumbnail } from '../utils';
 import DocumentPicker,{ DocumentPickerOptions } from 'react-native-document-picker';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import DraggableFlatList, {
+  ScaleDecorator,
+} from 'react-native-draggable-flatlist';
 
 export const Home = () => {
     const [userList, setUserList] = React.useState([]);
+    const [imagePath, setImagePath] = React.useState<SetStateAction<string>>("");
     const dispatch = useDispatch();
     const selector = useSelector((state: any) => state.users)
     const counterSelector = useSelector((state: any) => state.counter)
@@ -24,6 +29,7 @@ export const Home = () => {
         dispatch(decreseCounter())
     }
     const clearUser = () => {
+        setImagePath('')
         dispatch(clearUserList())
     }
 
@@ -36,28 +42,53 @@ export const Home = () => {
         // }
     }
 
+    const AnimatedImage = ({ source, style }: any) => {
+        const imageSource = typeof source === 'string' 
+          ? { 
+              uri: source,
+              cache: 'reload',
+              headers: { Pragma: 'no-cache' }
+            }
+          : source;
+      
+        return (
+          <Image
+            source={imageSource}
+            style={style}
+            resizeMode="contain"
+            // renderToHardwareTextureAndroid={true}
+            loadingIndicatorSource={imageSource}
+            progressiveRenderingEnabled={true}
+          />
+        );
+      };
+
     const imageCropPicker = async () => {
         const fetchVideo = await ImagePicker.openPicker({
-            mediaType: "video",
-            multiple: true,
-            compressVideoPreset: '640x480'
+            mediaType: "any",
+            // multiple: true,
+            // compressVideoPreset: '640x480'
         })
-        const videos = await Promise.all(fetchVideo.map(async (video) => {
-            return {
-                ...video,
-                thumbnail: await generateThumbnail(video.sourceURL ?? "")
-            }
-        }))
-        console.log("44444444444444", videos)
+        // const videos = await Promise.all(fetchVideo.map(async (video) => {
+        //     return {
+        //         ...video,
+        //         thumbnail: await generateThumbnail(video.sourceURL ?? "")
+        //     }
+        // }))
+        console.log("44444444444444", fetchVideo);
+        setImagePath(fetchVideo.sourceURL as any);
     }
 
     const documentPicker = async () => {
         try {
             const result = await DocumentPicker.pick({
-              type: [DocumentPicker.types?.audio],
-              allowMultiSelection:true
+              type: [DocumentPicker.types?.images],
+            //   allowMultiSelection:true
             });
             console.log("111111111111", result)
+            result.forEach((item) => {
+                setImagePath(item.uri)
+            })
           } catch (error) {
              Alert.alert('User canceled document picker');
           }
@@ -71,8 +102,11 @@ export const Home = () => {
             if (imageLibraryResponse.assets)
                 imageLibraryResponse.assets.forEach(async (item) => {
                     if (item.uri) {
-                        const thumbnail = await generateThumbnail(item.uri ?? "");
-                        Alert.alert("showAlert", JSON.stringify(thumbnail))
+                      console.log("11111111", item);
+                      
+                        setImagePath(item.uri)
+                        // const thumbnail = await generateThumbnail(item.uri ?? "");
+                        // Alert.alert("showAlert", JSON.stringify(thumbnail))
                     }
                 })
         }).catch(err => console.log("22222222222", err))
@@ -101,6 +135,9 @@ export const Home = () => {
               
               case RESULTS.GRANTED:
                 console.log('All permissions granted');
+                imageCropPicker();
+                // documentPicker();
+                // imagePicker()
                 return true;
               
               case RESULTS.BLOCKED:
@@ -119,12 +156,26 @@ export const Home = () => {
     return (
         <SafeAreaView style={{ paddingHorizontal: 10 }}>
             <Text style={[styles.blackText, styles.marginVirticle]}>User name : {selector.userName}</Text>
+            <GestureHandlerRootView style={styles.container}>
+              <DraggableFlatList
+                data={userList}
+                onDragEnd={({ data }) => console.log("onDragEnd", data)}
+                keyExtractor={(item : any) => item.id}
+                renderItem={(item) => <Text>{item.item.name}</Text>}
+                containerStyle={styles.listContainer}
+              />
+            </GestureHandlerRootView>
             {userList && userList.map((item: any) =>
                 <Text>{item.name}</Text>
             )}
             <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
             <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
             <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile} />
+            {imagePath && <AnimatedImage 
+                source={{uri: imagePath}} 
+                style={{height: 200, width: 200}}
+            />
+        }
         </SafeAreaView>
     )
 }
@@ -133,5 +184,12 @@ const styles = StyleSheet.create({
     blackText: { color: 'black' },
     whiteText: { color: 'white' },
     buttonWidth40: { width: '40%' },
-    marginVirticle: { marginVertical: 20, }
+    marginVirticle: { marginVertical: 20, },
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    listContainer: {
+      padding: 10,
+    },
 })

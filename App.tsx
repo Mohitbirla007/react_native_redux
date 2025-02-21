@@ -33,6 +33,7 @@ import { Home } from './src/screens/Home';
 import { Provider } from 'react-redux';
 import store from './src/redux/ReduxToolkit/store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import DraggableList from './src/screens/DraggableList';
 // import store from './src/redux/ReduxToolkit/store';
 
 
@@ -80,6 +81,15 @@ function App(): React.JSX.Element {
           <BottomTab.Screen
             name="Home" 
             component={Home}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Text style={{color: 'black'}}>{"<"}</Text>
+              ),
+            }}
+          />
+          <BottomTab.Screen
+            name="DraggableList" 
+            component={DraggableList}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Text style={{color: 'black'}}>{"<"}</Text>
