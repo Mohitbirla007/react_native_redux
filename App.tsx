@@ -34,11 +34,22 @@ import { Provider } from 'react-redux';
 import store from './src/redux/ReduxToolkit/store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DraggableList from './src/screens/DraggableList';
+import { MediaPlayer } from './src/screens/MediaPlayer';
 // import store from './src/redux/ReduxToolkit/store';
 
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
+
+const MyStack = () => {
+  return (
+    <Stack.Navigator initialRouteName='MediaPlayer'>
+      <Stack.Screen name="DraggableList" component={DraggableList}/>
+      <Stack.Screen name="MediaPlayer" component={MediaPlayer} />
+    </Stack.Navigator>
+  );
+}
+
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -88,8 +99,8 @@ function App(): React.JSX.Element {
             }}
           />
           <BottomTab.Screen
-            name="DraggableList" 
-            component={DraggableList}
+            name="StackScreen" 
+            component={MyStack}
             options={{
               tabBarIcon: ({ color, size }) => (
                 <Text style={{color: 'black'}}>{"<"}</Text>
