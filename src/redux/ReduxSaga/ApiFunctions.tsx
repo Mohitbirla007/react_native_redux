@@ -13,5 +13,6 @@ export const increaseCounterSaga = (action: any) => {
 export function* fetchUserList() {
     const response = yield fetch("https://jsonplaceholder.typicode.com/users");
     const data = yield response.json();
-    yield put(setUserList(data)); 
+    console.log("data", data)
+    yield put(setUserList([...data, ...data])); 
 }

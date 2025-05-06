@@ -1,8 +1,8 @@
 import React, { SetStateAction, useEffect } from 'react';
-import { Alert, Image, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, SafeAreaView, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView, NativeSyntheticEvent, NativeScrollEvent, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import CustomButton from '../components/CustomButton';
-import { increaseCounter, decreseCounter, clearUserList } from '../redux/ReduxToolkit/store/slices/userSlice';
+import { increaseCounter, decreseCounter, clearUserList, fetchUser } from '../redux/ReduxToolkit/store/slices/userSlice';
 import { requestMultiple, PERMISSIONS, PermissionStatus, check, RESULTS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createThumbnail } from "react-native-create-thumbnail";
@@ -14,27 +14,55 @@ import DraggableFlatList, {
   ScaleDecorator,
 } from 'react-native-draggable-flatlist';
 
+interface UserDetails {
+  address: {
+    city: string, 
+    geo: {lat: number, lng: number}, 
+    street: string, suite: string, zipcode: string}, 
+    company: {bs: string, catchPhrase: string, name: string}, 
+    email: string,
+    id: number,
+    name: string,
+    phone: number,
+    username: string,
+    website: string
+  }
+
 export const Home = () => {
-    const [userList, setUserList] = React.useState([]);
+    const [userList, setUserList] = React.useState<UserDetails[]>([]);
+    // const [copy, userDetails]
     const [imagePath, setImagePath] = React.useState<SetStateAction<string>>("");
+    const [isLoading, setIsLoading] = React.useState<boolean>(false);
+    const [verticalScrollOffset, setVerticalScrollOffset] = React.useState<number>(0);
+    const [email, setEmail] = React.useState<string>('');
+    const [emailError, setEmailError] = React.useState<string | null>(null);
     const dispatch = useDispatch();
     const selector = useSelector((state: any) => state.users)
-    const counterSelector = useSelector((state: any) => state.counter)
+    const counterSelector = useSelector((state: any) => state.counter);
+    const emailRegex = /^(|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+    const flatlistRef = React.createRef<FlatList>()
+
 
     useEffect(() => {
+        console.log('0000000000 set user lsit', selector.userList);
         setUserList(selector.userList)
-    })
+    }, [])
 
     const handleOnpress = () => {
         dispatch(decreseCounter())
     }
     const clearUser = () => {
-        setImagePath('')
+        setImagePath('');
+        setUserList([]);
         dispatch(clearUserList())
     }
 
     const selectFile = async () => {
-        requestPermission()
+        // requestPermission()
+        flatlistRef && flatlistRef.current && flatlistRef.current?.scrollToIndex({
+          animated: true,
+          index: 10,
+        })
         // const permission = await requestPermission()
         // if (permission) {
         //     // imagePicker();
@@ -75,7 +103,7 @@ export const Home = () => {
         //         thumbnail: await generateThumbnail(video.sourceURL ?? "")
         //     }
         // }))
-        console.log("44444444444444", fetchVideo);
+        // console.log("44444444444444", fetchVideo);
         setImagePath(fetchVideo.sourceURL as any);
     }
 
@@ -85,7 +113,7 @@ export const Home = () => {
               type: [DocumentPicker.types?.images],
             //   allowMultiSelection:true
             });
-            console.log("111111111111", result)
+            // console.log("111111111111", result)
             result.forEach((item) => {
                 setImagePath(item.uri)
             })
@@ -102,7 +130,7 @@ export const Home = () => {
             if (imageLibraryResponse.assets)
                 imageLibraryResponse.assets.forEach(async (item) => {
                     if (item.uri) {
-                      console.log("11111111", item);
+                      // console.log("11111111", item);
                       
                         setImagePath(item.uri)
                         // const thumbnail = await generateThumbnail(item.uri ?? "");
@@ -153,30 +181,120 @@ export const Home = () => {
           }
     }
 
+    const renderItem = (item: UserDetails, index: number) => {
+      return(
+        <View style={{ padding: 5, marginVertical: 5 , flexDirection: 'row', justifyContent: 'space-around'}}>
+          <View>
+            <Text>Name :     {item.name} {index}</Text>
+            <Text>Email :      {item.email}</Text>
+            <Text>Phone :    {item.phone}</Text>
+            <View style={styles.flexRow}>
+              <Text>Address : </Text>
+              <View>
+                <Text>{item.address.street}</Text>
+                <Text>{item.address.suite}</Text>
+                <Text>{item.address.city}</Text>
+                <Text>{item.address.zipcode}</Text>
+              </View>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() =>onEdit(item, index)} style={{borderWidth: 1, borderColor: 'black', height: 30, borderRadius: 15, paddingHorizontal: 10, justifyContent: 'center', alignItems: 'center'}}><Text>Edit : </Text></TouchableOpacity>
+        </View>
+      )
+    }
+
+    const onEdit = (userDetails : UserDetails, index1: number) => {
+        setIsLoading(true);
+        setTimeout(() => {
+          let userListCopy
+          let copyItem = {
+            address: {
+            city: 'indore', 
+            geo: {lat: 1234, lng: 1234}, 
+            street: 'string', suite: 'string', zipcode: 'string'}, 
+            company: {bs: 'string', catchPhrase: 'string', name: 'string'}, 
+            email: 'string',
+            id: 1984,
+            name: 'string',
+            phone: 1984,
+            username: 'string',
+            website: 'string'
+          }
+          userListCopy = userList.map((item, index) => {
+            if (index === index1) {
+              return copyItem;  // New value
+            }
+            return item;
+          });
+          console.log("33333333", userListCopy[index1])
+          setUserList(userListCopy);
+          setIsLoading(false);
+        }, 4000);
+        // dispatch(fetchUser(selector.userName));
+    }
+
+    const onReachEnd = () => {
+      let userData = [...userList, ...selector.userList];
+      setUserList(userData as any)
+    }
+    const onMomentScrollEnd = (event : NativeSyntheticEvent<NativeScrollEvent>) => {
+      console.log("111111", event.nativeEvent.contentOffset)
+      setVerticalScrollOffset(event.nativeEvent.contentOffset.y)
+    }
+
+    const onScrollEndDrag = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+      console.log("2222222", event.nativeEvent.contentOffset)
+      setVerticalScrollOffset(event.nativeEvent.contentOffset.y)
+    }
+
+    const handleInput = (text: string) => {
+      let test = text.match(emailRegex);
+      console.log("tewewe1111111111", test)
+      if(test){
+        setEmail(text);
+        setEmailError(null)
+      } else {
+        setEmailError("enter valie email")
+      }
+    }
+
     return (
-        <SafeAreaView style={{ paddingHorizontal: 10 }}>
-            <Text style={[styles.blackText, styles.marginVirticle]}>User name : {selector.userName}</Text>
-            <GestureHandlerRootView style={styles.container}>
-              <DraggableFlatList
-                data={userList}
-                onDragEnd={({ data }) => console.log("onDragEnd", data)}
-                keyExtractor={(item : any) => item.id}
-                renderItem={(item) => <Text>{item.item.name}</Text>}
-                containerStyle={styles.listContainer}
-              />
-            </GestureHandlerRootView>
-            {userList && userList.map((item: any) =>
-                <Text>{item.name}</Text>
-            )}
-            <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
-            <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
-            <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile} />
-            {imagePath && <AnimatedImage 
-                source={{uri: imagePath}} 
-                style={{height: 200, width: 200}}
+      <SafeAreaView style={{ paddingHorizontal: 10 }}>
+        {/* <ScrollView> */}
+        {isLoading ? < ActivityIndicator size={'large'}/> :
+          <View>
+            <FlatList
+              ref={flatlistRef}
+              data={userList}
+              keyExtractor={(item) => `${item.id}${Math.random().toFixed(3)}` as any}
+              renderItem={(item) => renderItem(item.item, item.index)}
+              // onEndReached={onReachEnd}
+              onMomentumScrollEnd={onMomentScrollEnd}
+              onScrollEndDrag={onScrollEndDrag}
+              ListHeaderComponent={() => <>
+                <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
+                <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
+                <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile} />
+              </>}
+              scrollEnabled
+              initialNumToRender={10} // Initially render 20 items
+              maxToRenderPerBatch={10} // Render 50 items at a time during scrolling
+              windowSize={5} // Optimize memory usage by rendering 5 times the visible area
+              // getItemLayout={getItemLayout} // Optimize layout calculations
+              removeClippedSubviews={true} // Remove off-screen items
+              ListFooterComponent={() => <>
+                {imagePath && <AnimatedImage
+                  source={{ uri: imagePath }}
+                  style={{ height: 200, width: 200 }}
+                />
+                }</>}
             />
+            <TextInput keyboardType='email-address' style={{borderWidth: 1, borderColor: 'black'}} onChangeText={handleInput}/>
+            {emailError && <Text style={{color: 'red'}}>{emailError}</Text>}
+          </View>
         }
-        </SafeAreaView>
+        {/* </ScrollView> */}
+      </SafeAreaView>
     )
 }
 
@@ -192,4 +310,7 @@ const styles = StyleSheet.create({
     listContainer: {
       padding: 10,
     },
+    flexRow: {flexDirection: 'row'},
+    flex: {flex: 1},
+    alignContentCenter: {justifyContent: 'center', alignItems: 'center'},
 })

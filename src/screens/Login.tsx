@@ -7,10 +7,12 @@ import { fetchUser, increaseCounter, setUserName } from '../redux/ReduxToolkit/s
 import CustomInput from '../components/CustomInput';
 
 export const Login = () => {
+    const [debounceText, setDebounceText] = React.useState('');
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const selector = useSelector((state: any) => state.users);
     const counterSelector = useSelector((state: any) => state.counter)
+    const debounceTimeout = React.useRef(null);
 
     const handleOnpress = () => {
         dispatch(increaseCounter())
@@ -20,7 +22,14 @@ export const Login = () => {
         navigation.navigate("Home" as never)
     }
     const handleChangeText =(text: string) => {
-        dispatch(setUserName(text));
+    dispatch(setUserName(text));
+    if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      debounceTimeout.current = setTimeout(() => {
+        setDebounceText(text);
+      }, 1000);
+  
     }
     const calculate = React.useMemo(() => {
         console.log("render calculate")
@@ -30,7 +39,7 @@ export const Login = () => {
     return (
         <SafeAreaView style={[styles.flex1]}>
             <CustomInput label='User Name' value={selector.userName} onChangeText={handleChangeText} inputContainerStyle={styles.buttonWidth90}/>
-            <Text>{selector.userName}</Text>
+            <Text>{debounceText}</Text>
             <CustomButton text={`Increase ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText}/>
             <CustomButton text={'Next ->'} handlePress={handleNextPress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText}/>
             <Text style={{alignSelf: 'center'}}>{calculate}</Text>
