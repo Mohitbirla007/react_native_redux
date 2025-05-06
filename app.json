@@ -1,4 +1,30 @@
 {
   "name": "NewApp",
-  "displayName": "NewApp"
+  "displayName": "NewApp",
+  "expo": {
+    "name": "Awesome app",
+    "plugins": [
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Camera",
+            "Microphone"
+          ]
+        }
+      ]
+    ],
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "[REASON]",
+        "NSMicrophoneUsageDescription": "[REASON]"
+      }
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
+    }
+  }
 }
