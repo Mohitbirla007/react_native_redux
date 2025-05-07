@@ -12,7 +12,7 @@ export const Login = () => {
     const dispatch = useDispatch();
     const selector = useSelector((state: any) => state.users);
     const counterSelector = useSelector((state: any) => state.counter)
-    const debounceTimeout = React.useRef(null);
+    const debounceTimeout = React.useRef<any>(null);
 
     const handleOnpress = () => {
         dispatch(increaseCounter())

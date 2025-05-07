@@ -14,6 +14,7 @@
     "@react-native-firebase/app": "^20.1.0",
     "@react-native-firebase/messaging": "^20.1.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
+    "@react-navigation/drawer": "^7.3.11",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
     "@reduxjs/toolkit": "^2.3.0",
