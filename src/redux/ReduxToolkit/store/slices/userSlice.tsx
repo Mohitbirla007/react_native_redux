@@ -11,7 +11,7 @@ const userSlice = createSlice({          // slices are the peices of store
             state.userName = action.payload
         },
         fetchUser(state, action) {
-            // state.userList.push(action.payload as never)
+            state.userList = action.payload
         },
         setUserList(state, action) {
             state.userList = action.payload

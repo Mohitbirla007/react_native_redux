@@ -38,15 +38,14 @@ export const Home = () => {
     const [emailError, setEmailError] = React.useState<string | null>(null);
     const dispatch = useDispatch();
     const selector = useSelector((state: any) => state.users)
+    const selectUserList = selector.userList
     const counterSelector = useSelector((state: any) => state.counter);
     const emailRegex = /^(|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
     const flatlistRef = React.createRef<FlatList>()
 
-
     useEffect(() => {
-        console.log('0000000000 set user lsit', selector.userList);
-        setUserList(selector.userList)
-    }, [])
+        setUserList(selectUserList)
+    }, [selectUserList])
 
     const handleOnpress = () => {
         dispatch(decreseCounter())
@@ -54,7 +53,11 @@ export const Home = () => {
     const clearUser = () => {
         setImagePath('');
         setUserList([]);
-        dispatch(clearUserList())
+        dispatch(clearUserList());
+    }
+
+    const fetchUserList = () => {
+      dispatch(fetchUser(selector.userName));
     }
 
     const selectFile = async () => {
@@ -273,6 +276,7 @@ export const Home = () => {
               onScrollEndDrag={onScrollEndDrag}
               ListHeaderComponent={() => <>
                 <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
+                <CustomButton text={`Fetch User`} handlePress={fetchUserList} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
                 <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
                 <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile} />
               </>}
