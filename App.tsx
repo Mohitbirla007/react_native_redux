@@ -8,11 +8,13 @@
 import React, { useEffect } from 'react';
 import type { PropsWithChildren } from 'react';
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -35,6 +37,13 @@ import store from './src/redux/ReduxToolkit/store';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import DraggableList from './src/screens/DraggableList';
 import { MediaPlayer } from './src/screens/MediaPlayer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createStaticNavigation,
+  useNavigation,
+} from '@react-navigation/native';
+import { Setting } from './src/screens/Settings';
+import Icon from 'react-native-vector-icons/AntDesign'
 // import store from './src/redux/ReduxToolkit/store';
 
 
@@ -48,6 +57,38 @@ const MyStack = () => {
       <Stack.Screen name="MediaPlayer" component={MediaPlayer} />
     </Stack.Navigator>
   );
+}
+
+const Drawer = createDrawerNavigator();
+
+const AppDrawer = () => {
+  return(
+    <Drawer.Navigator initialRouteName='Home'>
+      <Drawer.Screen name="Home" component={Home}/>
+      <Drawer.Screen name="Settings" component={Setting} 
+        options={({ navigation }) => ({
+          title: 'Settings',
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => Alert.alert('Are sure you want to logout')}
+              style={{ marginRight: 15 }}
+            >
+              <Icon name="logout" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            backgroundColor: '#f0f0f0',
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            color: '#333',
+          },
+        })}
+        />
+      <Drawer.Screen name="DraggList" component={DraggableList}/>
+      <Drawer.Screen name="MediaPlayer" component={MediaPlayer}/>
+    </Drawer.Navigator>
+  )
 }
 
 function App(): React.JSX.Element {
@@ -79,36 +120,14 @@ function App(): React.JSX.Element {
           barStyle={isDarkMode ? 'light-content' : 'dark-content'}
           backgroundColor={backgroundStyle.backgroundColor}
         />
-        <BottomTab.Navigator >
-          <BottomTab.Screen
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen
             name="Login" 
             component={Login}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Text style={{color: 'black'}}>{"<"}</Text>
-              ),
-            }}
           />
-          <BottomTab.Screen
-            name="Home" 
-            component={Home}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Text style={{color: 'black'}}>{"<"}</Text>
-              ),
-            }}
-          />
-          <BottomTab.Screen
-            name="StackScreen" 
-            component={MyStack}
-            options={{
-              tabBarIcon: ({ color, size }) => (
-                <Text style={{color: 'black'}}>{"<"}</Text>
-              ),
-            }}
-          />
-        </BottomTab.Navigator>
-      </NavigationContainer>
+          <Stack.Screen name="MainApp" component={AppDrawer} />
+        </Stack.Navigator>
+        </NavigationContainer>
     </Provider>
   );
 }

@@ -19,7 +19,7 @@ export const Login = () => {
     }
     const handleNextPress = () => {
         dispatch(fetchUser(selector.userName));
-        navigation.navigate("Home" as never)
+        navigation.navigate("MainApp" as never)
     }
     const handleChangeText =(text: string) => {
     dispatch(setUserName(text));

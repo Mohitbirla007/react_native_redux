@@ -14,5 +14,5 @@ export function* fetchUserList() {
     const response = yield fetch("https://jsonplaceholder.typicode.com/users");
     const data = yield response.json();
     console.log("data", data)
-    yield put(setUserList([...data, ...data])); 
+    yield put(setUserList(data)); 
 }
