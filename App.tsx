@@ -44,17 +44,18 @@ import {
 } from '@react-navigation/native';
 import { Setting } from './src/screens/Settings';
 import Icon from 'react-native-vector-icons/AntDesign'
+import Comment from './src/screens/Comment';
 // import store from './src/redux/ReduxToolkit/store';
 
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 
-const MyStack = () => {
+const SettingStack = () => {
   return (
-    <Stack.Navigator initialRouteName='MediaPlayer'>
-      <Stack.Screen name="DraggableList" component={DraggableList}/>
-      <Stack.Screen name="MediaPlayer" component={MediaPlayer} />
+    <Stack.Navigator initialRouteName='Setting'>
+      <Stack.Screen name="Setting" component={Setting} options={{ headerShown: false }}/>
+      <Stack.Screen name="Comment" component={Comment} />
     </Stack.Navigator>
   );
 }
@@ -65,7 +66,7 @@ const AppDrawer = () => {
   return(
     <Drawer.Navigator initialRouteName='Home'>
       <Drawer.Screen name="Home" component={Home}/>
-      <Drawer.Screen name="Settings" component={Setting} 
+      <Drawer.Screen name="Settings" component={SettingStack} 
         options={({ navigation }) => ({
           title: 'Settings',
           headerRight: () => (
