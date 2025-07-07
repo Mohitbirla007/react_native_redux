@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import {SafeAreaView, StyleSheet, Text } from 'react-native';
+import {SafeAreaView, StyleSheet, Text, NativeModules } from 'react-native';
 import CustomButton from '../components/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, increaseCounter, setUserName } from '../redux/ReduxToolkit/store/slices/userSlice';
 import CustomInput from '../components/CustomInput';
+const { DeviceInfo } = NativeModules;
 
 export const Login = () => {
     const [debounceText, setDebounceText] = React.useState('');
@@ -13,6 +14,10 @@ export const Login = () => {
     const selector = useSelector((state: any) => state.users);
     const counterSelector = useSelector((state: any) => state.counter)
     const debounceTimeout = React.useRef<any>(null);
+
+    React.useEffect(() => {
+        console.log("Device Info:", DeviceInfo);
+    }, []);
 
     const handleOnpress = () => {
         dispatch(increaseCounter())
