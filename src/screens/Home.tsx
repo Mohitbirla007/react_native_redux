@@ -267,6 +267,7 @@ export const Home = () => {
         {isLoading ? < ActivityIndicator size={'large'}/> :
           <View>
             <FlatList
+              testID='flatlist'
               ref={flatlistRef}
               data={userList}
               keyExtractor={(item) => `${item.id}${Math.random().toFixed(3)}` as any}
@@ -275,7 +276,7 @@ export const Home = () => {
               onMomentumScrollEnd={onMomentScrollEnd}
               onScrollEndDrag={onScrollEndDrag}
               ListHeaderComponent={() => <>
-                <CustomButton text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
+                <CustomButton testID='decrease-counter' text={`Decrese ${counterSelector.counter}`} handlePress={handleOnpress} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
                 <CustomButton text={`Fetch User`} handlePress={fetchUserList} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
                 <CustomButton text={`Clear User`} handlePress={clearUser} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} />
                 <CustomButton text={"select file"} buttonStyle={styles.buttonWidth40} textStyle={styles.whiteText} handlePress={selectFile} />

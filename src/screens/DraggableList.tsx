@@ -18,6 +18,7 @@ export default function DraggableList() {
       <View>
         <Text>{item}</Text>
         <TouchableOpacity 
+          testID={`draggable-item`}
           key={item}
           onPressIn={onDragStart}
           onPressOut={onDragEnd}

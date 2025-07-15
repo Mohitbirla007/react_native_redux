@@ -2,6 +2,7 @@ import React from 'react'
 import { StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
 
 interface ButtonProps {
+    testID?: string;
     handlePress?: () => void;
     text: string;
     buttonStyle?: ViewStyle;
